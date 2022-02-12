@@ -42,7 +42,7 @@ namespace FileLoggerKata
     }
 
     // TODO klasse som implementerer dette interfacet må også testes
-    // det må testes at strengene returneres på korrekt format
+    // det må testes at strengene returneres på korrekt format 
 
     public interface IDateTimeWrapper
     {
