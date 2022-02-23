@@ -11,12 +11,12 @@ namespace FileLoggerKata
     {
         private readonly string _weekendFile = "weekend.txt";
 
-        private readonly IFileSystemOperations _fileWrapper;
+        private readonly IFileSystemOperations _fileOperations;
         private readonly IDateTimeWrapper _dateTimeWrapper;
                
         public FileLogger(IFileSystemOperations fileWrapper, IDateTimeWrapper dateTimeWrapper)
         {
-            _fileWrapper = fileWrapper;
+            _fileOperations = fileWrapper;
             _dateTimeWrapper = dateTimeWrapper;
         }
 
@@ -30,7 +30,7 @@ namespace FileLoggerKata
             if (filePath == _weekendFile)
                 RenameWeekendFileIfNecessary();
 
-            _fileWrapper.AppendText(filePath, logText);
+            _fileOperations.AppendText(filePath, logText);
         }
 
         //public void Log_new(string message)
@@ -68,9 +68,9 @@ namespace FileLoggerKata
         /// </summary>
         private void RenameWeekendFileIfNecessary()
         {
-            if (_fileWrapper.FileExist(_weekendFile))
+            if (_fileOperations.FileExist(_weekendFile))
             {
-                DateTime modifiedDate = _fileWrapper.GetFileModifiedDate(_weekendFile);
+                DateTime modifiedDate = _fileOperations.GetFileModifiedDate(_weekendFile);
                 TimeSpan interval = _dateTimeWrapper.GetNow().Date - modifiedDate.Date;
 
                 if (interval.TotalDays >= 2) // not modified this weekend
@@ -84,7 +84,7 @@ namespace FileLoggerKata
                         newFileName = $"weekend-{saturday.ToString("yyyyMMdd")}.txt";
                     }
                         
-                    _fileWrapper.RenameFile(_weekendFile, newFileName);
+                    _fileOperations.RenameFile(_weekendFile, newFileName);
                 }
             }
         }
@@ -101,8 +101,6 @@ namespace FileLoggerKata
         bool RenameFile(string srcFilePath, string newFilePath);
     }
 
-    // TODO en klasse som implementerer dette interfacet må også testes
-    // det må testes at strengene returneres på korrekt format 
 
     public interface IDateTimeWrapper
     {
