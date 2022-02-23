@@ -11,10 +11,10 @@ namespace FileLoggerKata
     {
         private readonly string _weekendFile = "weekend.txt";
 
-        private readonly IFileWrapper _fileWrapper;
+        private readonly IFileSystemOperations _fileWrapper;
         private readonly IDateTimeWrapper _dateTimeWrapper;
                
-        public FileLogger(IFileWrapper fileWrapper, IDateTimeWrapper dateTimeWrapper)
+        public FileLogger(IFileSystemOperations fileWrapper, IDateTimeWrapper dateTimeWrapper)
         {
             _fileWrapper = fileWrapper;
             _dateTimeWrapper = dateTimeWrapper;
@@ -22,30 +22,46 @@ namespace FileLoggerKata
 
         public void Log(string message)
         {
-            string text = $"{_dateTimeWrapper.GetNowString()} {message}";
-            string filePath = GetCurrentLogFilePath();
+            string logTimeString = _dateTimeWrapper.GetNow().ToString("yyyy-MM-dd HH:mm:ss");
+            string logText = $"{logTimeString} {message}";
+
+            string filePath = GetLogFileName();
 
             if (filePath == _weekendFile)
                 RenameWeekendFileIfNecessary();
 
-            _fileWrapper.AppendText(filePath, text);
+            _fileWrapper.AppendText(filePath, logText);
         }
 
-        private string GetCurrentLogFilePath()
+        //public void Log_new(string message)
+        //{
+            
+        //}
+
+        private string GetLogFileName()
         {
             string fileName;
-            if (!_dateTimeWrapper.NowIsWeekend())
+            DateTime now = _dateTimeWrapper.GetNow();
+
+            if (IsWeekend(now))
             {
-                string currentDate = _dateTimeWrapper.GetNowDateString();
-                fileName = $"log{currentDate}.txt";
+                fileName = _weekendFile;
             }
             else
             {
-                fileName = _weekendFile;
+                string fileDateString = now.ToString("yyyyMMdd");
+                fileName = $"log{fileDateString}.txt";
             }
             
             return fileName;
         }
+
+
+        private bool IsWeekend(DateTime date)
+        {
+            return (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday);
+        }
+
 
         /// <summary>
         /// Checks if weekend file exist and when its modified - If its not modified current weekend, it is renamed.
@@ -74,7 +90,7 @@ namespace FileLoggerKata
         }
     }
 
-    public interface IFileWrapper
+    public interface IFileSystemOperations
     {
         void AppendText(string filePath, string text);
 
@@ -91,12 +107,6 @@ namespace FileLoggerKata
     public interface IDateTimeWrapper
     {
         DateTime GetNow();
-
-        string GetNowString();//DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-
-        string GetNowDateString();//DateTime.Now.TosTring(yyyyMMdd)
-
-        bool NowIsWeekend();
 
     }
 
