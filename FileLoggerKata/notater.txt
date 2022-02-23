@@ -1,0 +1,22 @@
+﻿
+Logikken i RenameWeekendFileIfNecessary() testes nøyere med flere testcases. Dvs. egen test for denne metoden.
+- sjekke de fleste mulige utfall
+
+Oppkallet av RenameWeekendFile.. fra Log() testes med to varianter - en for hver eksekveringsvei i if-statement
+- a. kalles når den skal (logdato er weekend), b. ikke kalles når den ikke skal
+
+TODO
+- Lag en testmetode for Rename..., med mulighet for flere testcases som tester kombinasjonene av tilstander
+    bør teste de fleste kombinasjoner
+
+- vurder om testmetoder for Rename... skal endre navn til Log_.. istedet
+    - se på oppkallingsrekkefølge og logisk flyt for Log
+
+- lag klasse for IDateTimeWrapper og test denne
+
+    //public void NowIsWeekend_WhenNowIsNotWeekend_ReturnsFalse
+    //public void NowIsWeekend_WhenNowIsWeekend_ReturnsTrue
+
+    //Hvordan assert mot mock vha NSubstitute
+    //-bruke Received() for å sjekke at angitt metode kalles opp som forventet
+    //mockObject.Received().MetodeSomSkalSjekkes([forventede parametere])
