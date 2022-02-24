@@ -1,5 +1,3 @@
-# FileLoggerKata
-
 File Logger Kata
 ================
 
