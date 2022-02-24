@@ -27,16 +27,11 @@ namespace FileLoggerKata
 
             string filePath = GetLogFileName();
 
-            if (filePath == _weekendFile)
-                RenameWeekendFileIfNecessary();
+            RenameWeekendFileIfNecessary();
 
             _fileOperations.AppendText(filePath, logText);
         }
 
-        //public void Log_new(string message)
-        //{
-            
-        //}
 
         private string GetLogFileName()
         {
@@ -68,25 +63,27 @@ namespace FileLoggerKata
         /// </summary>
         private void RenameWeekendFileIfNecessary()
         {
-            if (_fileOperations.FileExist(_weekendFile))
-            {
-                DateTime modifiedDate = _fileOperations.GetFileModifiedDate(_weekendFile);
-                TimeSpan interval = _dateTimeWrapper.GetNow().Date - modifiedDate.Date;
+            if ( !IsWeekend(_dateTimeWrapper.GetNow())
+                || !_fileOperations.FileExist(_weekendFile))
+                return;
+           
+            DateTime modifiedDate = _fileOperations.GetFileModifiedDate(_weekendFile);
+            TimeSpan interval = _dateTimeWrapper.GetNow().Date - modifiedDate.Date;
 
-                if (interval.TotalDays >= 2) // not modified this weekend
+            if (interval.TotalDays >= 2) // not modified this weekend
+            {
+                string newFileName;
+                if (modifiedDate.DayOfWeek == DayOfWeek.Saturday)
+                    newFileName = $"weekend-{modifiedDate.ToString("yyyyMMdd")}.txt";
+                else
                 {
-                    string newFileName;
-                    if (modifiedDate.DayOfWeek == DayOfWeek.Saturday)
-                        newFileName = $"weekend-{modifiedDate.ToString("yyyyMMdd")}.txt";
-                    else
-                    {
-                        DateTime saturday = modifiedDate.AddDays(- ((int)modifiedDate.DayOfWeek + 1));
-                        newFileName = $"weekend-{saturday.ToString("yyyyMMdd")}.txt";
-                    }
-                        
-                    _fileOperations.RenameFile(_weekendFile, newFileName);
+                    DateTime saturday = modifiedDate.AddDays(- ((int)modifiedDate.DayOfWeek + 1));
+                    newFileName = $"weekend-{saturday.ToString("yyyyMMdd")}.txt";
                 }
+                        
+                _fileOperations.RenameFile(_weekendFile, newFileName);
             }
+            
         }
     }
 

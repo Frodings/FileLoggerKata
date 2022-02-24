@@ -12,11 +12,10 @@ TODO
 - vurder om testmetoder for Rename... skal endre navn til Log_.. istedet
     - se på oppkallingsrekkefølge og logisk flyt for Log
 
-- lag klasse for IDateTimeWrapper og test denne
-
-    //public void NowIsWeekend_WhenNowIsNotWeekend_ReturnsFalse
-    //public void NowIsWeekend_WhenNowIsWeekend_ReturnsTrue
+Ta en kikk på
+https://github.com/egil/FileLoggerKata/tree/master/FileLoggerKata
 
     //Hvordan assert mot mock vha NSubstitute
     //-bruke Received() for å sjekke at angitt metode kalles opp som forventet
     //mockObject.Received().MetodeSomSkalSjekkes([forventede parametere])
+

@@ -47,16 +47,13 @@ namespace FileLoggerKata
             mockFileSysOps.Received().AppendText("weekend.txt", "2022-02-13 21:21:01 Dette er en test");
         }
 
-        // ! Det er kanskje feil navngivning på disse metodene, siden det er Log() som faktisk kalles
-        // og dette er inngangen for Unit under test..
-        // navn kunne vært Log_CallsRenameFile_
         [TestCase("2022-02-13 18:13:01", "2022-02-06 21:15:13", "weekend-20220205.txt")]
         [TestCase("2022-02-12 18:13:01", "2022-01-01 15:06:22", "weekend-20220101.txt")]
-        public void RenameWeekendFileIfNecessary_WhenFileIsOld_RenameFileIsCalled(DateTime logTime, DateTime exisitingFileModifiedDate, string expectedFileName)
+        public void Log_WhenWeekendAndOldLogfile_CallsRenameFile(DateTime logTime, DateTime existingFileModifiedDate, string expectedFileName)
         {
             IFileSystemOperations mockFileSysOps = Substitute.For<IFileSystemOperations>();
 
-            mockFileSysOps.GetFileModifiedDate(Arg.Any<string>()).Returns(exisitingFileModifiedDate);
+            mockFileSysOps.GetFileModifiedDate(Arg.Any<string>()).Returns(existingFileModifiedDate);
             mockFileSysOps.FileExist(Arg.Any<string>()).Returns(true);
 
             FileLogger logger = CreateFileLogger(logTime, mockFileSysOps);
@@ -67,7 +64,7 @@ namespace FileLoggerKata
 
 
         [TestCase("2022-02-13 14:04:01", "2022-02-12 21:32:22")]
-        public void RenameWeekendFileIfNecessary_WhenFileIsNew_RenameFileIsNotCalled(DateTime logTime, DateTime existingFileModifiedDate)
+        public void Log_WhenWeekendAndFileIsNew_RenameFileIsNotCalled(DateTime logTime, DateTime existingFileModifiedDate)
         {
             IFileSystemOperations mockFileSysOps = Substitute.For<IFileSystemOperations>();
             mockFileSysOps.GetFileModifiedDate(Arg.Any<string>()).Returns(existingFileModifiedDate);
@@ -81,14 +78,4 @@ namespace FileLoggerKata
     
     }
 
-    // TODO
-    // lag klasse for IDateTimeWrapper
-    // test denne
-
-    //public void NowIsWeekend_WhenNowIsNotWeekend_ReturnsFalse
-    //public void NowIsWeekend_WhenNowIsWeekend_ReturnsTrue
-
-    //Hvordan assert mot mock vha NSubstitute
-    //-bruke Received() for å sjekke at angitt metode kalles opp som forventet
-    //mockObject.Received().MetodeSomSkalSjekkes([forventede parametere])
 }
