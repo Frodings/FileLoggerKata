@@ -60,6 +60,8 @@
   <ItemGroup>
     <Compile Include="FileLogger.cs" />
     <Compile Include="FileLoggerTests.cs" />
+    <Compile Include="IDateTimeWrapper.cs" />
+    <Compile Include="IFileSystemOperations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

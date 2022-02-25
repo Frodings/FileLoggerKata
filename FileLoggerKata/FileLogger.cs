@@ -63,6 +63,7 @@ namespace FileLoggerKata
         /// </summary>
         private void RenameWeekendFileIfNecessary()
         {
+            // TODO denne logikken må testes
             if ( !IsWeekend(_dateTimeWrapper.GetNow())
                 || !_fileOperations.FileExist(_weekendFile))
                 return;
@@ -85,24 +86,6 @@ namespace FileLoggerKata
             }
             
         }
-    }
-
-    public interface IFileSystemOperations
-    {
-        void AppendText(string filePath, string text);
-
-        bool FileExist(string filepath);
-
-        DateTime GetFileModifiedDate(string filePath);
-
-        bool RenameFile(string srcFilePath, string newFilePath);
-    }
-
-
-    public interface IDateTimeWrapper
-    {
-        DateTime GetNow();
-
     }
 
     
