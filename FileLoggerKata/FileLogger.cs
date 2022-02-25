@@ -29,6 +29,9 @@ namespace FileLoggerKata
 
             RenameWeekendFileIfNecessary();
 
+            if (!_fileOperations.FileExist(filePath))
+                _fileOperations.CreateFile(filePath);
+
             _fileOperations.AppendText(filePath, logText);
         }
 
@@ -63,7 +66,6 @@ namespace FileLoggerKata
         /// </summary>
         private void RenameWeekendFileIfNecessary()
         {
-            // TODO denne logikken må testes
             if ( !IsWeekend(_dateTimeWrapper.GetNow())
                 || !_fileOperations.FileExist(_weekendFile))
                 return;

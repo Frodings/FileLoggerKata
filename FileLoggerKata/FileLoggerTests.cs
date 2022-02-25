@@ -7,13 +7,14 @@ namespace FileLoggerKata
     [TestFixture]
     public class FileLoggerTests
     {
+        private readonly string _logMessage = "Dette er en test";
 
-        private FileLogger CreateFileLogger(DateTime logTime, IFileSystemOperations fileWrapper)
+        private FileLogger CreateFileLogger(DateTime logTime, IFileSystemOperations fileOperations)
         {
             IDateTimeWrapper stubDateTime = Substitute.For<IDateTimeWrapper>();
             stubDateTime.GetNow().Returns(logTime);
 
-            var logger = new FileLogger(fileWrapper, stubDateTime);
+            var logger = new FileLogger(fileOperations, stubDateTime);
 
             return logger;
         }
@@ -37,11 +38,11 @@ namespace FileLoggerKata
             FileLogger logger = CreateFileLogger(testTime, mockFileSysOps);
 
             // act
-            logger.Log("Dette er en test");
+            logger.Log(_logMessage);
 
             //assert - bruker NSubstitute sin Received() for å sjekke at mockFileSysOps.AppendText() er kalt opp som angitt 
             string expectedFileName = $"log{testTime.ToString("yyyyMMdd")}.txt";
-            string expectedLogMessage = $"{testTime.ToString("yyyy-MM-dd HH:mm:ss")} Dette er en test";
+            string expectedLogMessage = $"{testTime.ToString("yyyy-MM-dd HH:mm:ss")} {_logMessage}";
             mockFileSysOps.Received().AppendText(expectedFileName, expectedLogMessage);
         }
 
@@ -53,11 +54,10 @@ namespace FileLoggerKata
            
             var logger = CreateFileLogger(logTime, mockFileSysOps);
 
-            string logMessage = "Dette er en test";
-            logger.Log(logMessage);
+            logger.Log(_logMessage);
 
             string expectedFileName = "weekend.txt";
-            string expectedLogMessage = $"{logTime.ToString("yyyy-MM-dd HH:mm:ss")} {logMessage}";
+            string expectedLogMessage = $"{logTime.ToString("yyyy-MM-dd HH:mm:ss")} {_logMessage}";
             mockFileSysOps.Received().AppendText(expectedFileName, expectedLogMessage);
         }
 
@@ -68,7 +68,7 @@ namespace FileLoggerKata
             IFileSystemOperations mockFileSysOps = CreateFakeFileSystemOperations(existingFileModifiedDate);
 
             FileLogger logger = CreateFileLogger(logTime, mockFileSysOps);
-            logger.Log("Dette er en test");
+            logger.Log(_logMessage);
 
             mockFileSysOps.Received().RenameFile(Arg.Any<string>(), expectedFileName);
         }
@@ -81,9 +81,34 @@ namespace FileLoggerKata
             IFileSystemOperations mockFileSysOps = CreateFakeFileSystemOperations(existingFileModifiedDate);
 
             FileLogger logger = CreateFileLogger(logTime, mockFileSysOps);
-            logger.Log("Dette er en test");
+            logger.Log(_logMessage);
 
             mockFileSysOps.DidNotReceive().RenameFile(Arg.Any<string>(), Arg.Any<string>());
+        }
+
+        [Test]
+        public void Log_LogFileNotExist_CreatesFileBeforWriting()
+        {
+            var mockFileSysOps = Substitute.For<IFileSystemOperations>();
+            mockFileSysOps.FileExist(Arg.Any<string>()).Returns(false);
+            FileLogger logger = CreateFileLogger(DateTime.Now, mockFileSysOps);
+
+            logger.Log(_logMessage);
+
+            mockFileSysOps.Received(1).CreateFile(Arg.Any<string>());
+            mockFileSysOps.Received(1).AppendText(Arg.Any<string>(), Arg.Any<string>());
+        }
+
+        public void Log_LogFileExist_AppendsToExistingFile()
+        {
+            var mockFileSysOps = Substitute.For<IFileSystemOperations>();
+            mockFileSysOps.FileExist(Arg.Any<string>()).Returns(true);
+            FileLogger logger = CreateFileLogger(DateTime.Now, mockFileSysOps);
+
+            logger.Log(_logMessage);
+
+            mockFileSysOps.DidNotReceive().CreateFile(Arg.Any<string>());
+            mockFileSysOps.Received(1).AppendText(Arg.Any<string>(), Arg.Any<string>());
         }
     
     }

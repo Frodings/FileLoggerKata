@@ -8,6 +8,8 @@ namespace FileLoggerKata
 
         bool FileExist(string filepath);
 
+        void CreateFile(string filepath);
+
         DateTime GetFileModifiedDate(string filePath);
 
         bool RenameFile(string srcFilePath, string newFilePath);
